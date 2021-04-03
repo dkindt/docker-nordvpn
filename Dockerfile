@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:focal
 
 LABEL maintainer="Julio Gutierrez"
 ARG NORDVPN_VERSION=3.9.1-1
