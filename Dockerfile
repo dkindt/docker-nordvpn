@@ -1,7 +1,7 @@
 FROM ubuntu:focal
 
 LABEL maintainer="Julio Gutierrez"
-ARG NORDVPN_VERSION=3.9.1-1
+ARG NORDVPN_VERSION=3.9.2-1
 
 HEALTHCHECK --interval=5m --timeout=20s --start-period=1m \
 	CMD if test $( curl -m 10 -s https://api.nordvpn.com/v1/helpers/ips/insights | jq -r '.["protected"]' ) = "true" ; then exit 0; else nordvpn disconnect; nordvpn connect ${CONNECT} ; exit $?; fi
