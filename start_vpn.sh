@@ -2,7 +2,7 @@
 [[ -n ${DEBUG} ]] && set -x
 [[ -n ${COUNTRY} && -z ${CONNECT} ]] && CONNECT=${COUNTRY}
 
-DOCKER_NET="$(ip -o addr show dev eth0 | awk '$3 == "inet" {print $4}')" 
+DOCKER_NET="$(ip -o addr show dev eth0 | awk '$3 == "inet" {print $4}')"
 
 kill_switch() {
 	iptables -F
@@ -75,11 +75,11 @@ kill_switch() {
 
 return_route() { # Add a route back to your network, so that return traffic works
 	local network="$1" gw=$(ip route |awk '/default/ {print $3}')
-    	ip route | grep -q "$network" || ip route add to "$network" via "$gw" dev eth0
-    	iptables -A INPUT -s "$network" -j ACCEPT
-    	iptables -A FORWARD -d "$network" -j ACCEPT
-    	iptables -A FORWARD -s "$network" -j ACCEPT
-    	iptables -A OUTPUT -d "$network" -j ACCEPT
+	ip route | grep -q "$network" || ip route add to "$network" via "$gw" dev eth0
+	iptables -A INPUT -s "$network" -j ACCEPT
+	iptables -A FORWARD -d "$network" -j ACCEPT
+	iptables -A FORWARD -s "$network" -j ACCEPT
+	iptables -A OUTPUT -d "$network" -j ACCEPT
 }
 
 return_route6() { # Add a route back to your network, so that return traffic works

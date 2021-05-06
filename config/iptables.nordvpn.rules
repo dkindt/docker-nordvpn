@@ -1,0 +1,57 @@
+iptables -F
+iptables -X
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i lo -j ACCEPT
+iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A OUTPUT -o tap+ -j ACCEPT
+iptables -A OUTPUT -o tun+ -j ACCEPT
+iptables -A OUTPUT -o nordlynx -j ACCEPT
+
+iptables -t nat -A POSTROUTING -o tap+ -j MASQUERADE
+iptables -t nat -A POSTROUTING -o tun+ -j MASQUERADE
+iptables -t nat -A POSTROUTING -o nordlynx -j MASQUERADE
+
+iptables  -A OUTPUT -p udp -m udp --dport 53    -j ACCEPT
+iptables  -A OUTPUT -p udp -m udp --dport 51820 -j ACCEPT
+iptables  -A OUTPUT -p tcp -m tcp --dport 1194  -j ACCEPT
+iptables  -A OUTPUT -p udp -m udp --dport 1194  -j ACCEPT
+iptables  -A OUTPUT -p tcp -m tcp --dport 443   -j ACCEPT
+
+if [[ -n ${DOCKER_NET} ]]; then
+    iptables -A INPUT -s "${DOCKER_NET}" -j ACCEPT
+    iptables -A FORWARD -d "${DOCKER_NET}" -j ACCEPT
+    iptables -A FORWARD -s "${DOCKER_NET}" -j ACCEPT
+    iptables -A OUTPUT -d "${DOCKER_NET}" -j ACCEPT
+fi
+[[ -n ${NETWORK} ]]  && for net in ${NETWORK//[;,]/ };  do return_route "${net}";  done
+
+
+
+ip6tables -F 2>/dev/null
+ip6tables -X 2>/dev/null
+ip6tables -P INPUT DROP 2>/dev/null
+ip6tables -P FORWARD DROP 2>/dev/null
+ip6tables -P OUTPUT DROP 2>/dev/null
+ip6tables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null
+ip6tables -A INPUT -p icmp -j ACCEPT 2>/dev/null
+ip6tables -A INPUT -i lo -j ACCEPT 2>/dev/null
+ip6tables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null
+ip6tables -A FORWARD -p icmp -j ACCEPT 2>/dev/null
+ip6tables -A FORWARD -i lo -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -o lo -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -o tap+ -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -o tun+ -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -o nordlynx -j ACCEPT 2>/dev/null
+
+ip6tables -A OUTPUT -p udp -m udp --dport 53    -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -p udp -m udp --dport 51820 -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -p tcp -m tcp --dport 1194  -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -p udp -m udp --dport 1194  -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -p tcp -m tcp --dport 443   -j ACCEPT 2>/dev/null
